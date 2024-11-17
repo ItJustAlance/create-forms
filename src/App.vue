@@ -89,6 +89,46 @@ const jsonData = {
 			"required": "true"
 		},
 		{
+			"id": "11",
+			"control": "RADIO",
+			"caption": "Радио",
+			"parentID": "123",
+			"tabIndex": 1,
+			"position": 3,
+			"type": "radio",
+			"required": "true",
+			"options": [
+				{ "value": "option1", "label": "Вариант 1" },
+				{ "value": "option2", "label": "Вариант 2" },
+				{ "value": "option3", "label": "Вариант 3" },
+				{ "value": "option4", "label": "Вариант 4" }
+			]
+		},
+		{
+			"id": "198",
+			"control": "CHECKBOX",
+			"caption": "Чебокс",
+			"parentID": "123",
+			"position": 3,
+			"required": "true",
+			"options": [
+				{ "value": "check1", "label": "Чебокс 1" },
+				{ "value": "check2", "label": "Чебокс 2" }
+			]
+		},
+		{
+			"id": "7890",
+			"control": "SELECT",
+			"caption": "Выберите из списка",
+			"parentID": "123",
+			"position": 4,
+			"required": "true",
+			"options": [
+				{ "value": "sel1", "label": "option 1" },
+				{ "value": "sel2", "label": "option 2" }
+			]
+		},
+		{
 			"id": "1222",
 			"control": "BUTTON",
 			"caption": "OK",
@@ -110,22 +150,9 @@ const jsonData = {
 	"submitUrl": "/api/submitForm"
 };
 
-export interface Control {
-	id: string;
-	control: "FORM" | "TEXT" | "LABEL" | "BUTTON";
-	caption: string;
-	parentID?: string;
-	tabIndex?: number;
-	position: number;
-	type?: string;
-	required?: boolean;
-}
+import { Control, JsonData } from "@/types/interface";
 
-export interface JsonData {
-	title?: string;
-	controls: Control[];
-	submitUrl?: string;
-}
+
 
 
 export default Vue.extend({
