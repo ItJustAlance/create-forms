@@ -1,12 +1,25 @@
 <template>
-  <div class="hello">
-    button
-  </div>
+	<div>
+		<button
+				@click="onClick()">
+			{{ control.caption }}
+		</button>
+		
+	</div>
 </template>
 
-<script lang="ts">
-
-
+<script>
+export default {
+	name: 'FormButton',
+	props: {
+		control: Object,
+		formDataResult: Object,
+		errors: Object,
+	},
+	methods:{
+		onClick(){
+			this.$emit('button-click', this.control)
+		}
+	}
+};
 </script>
-
-

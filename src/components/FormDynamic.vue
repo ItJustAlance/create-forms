@@ -3,70 +3,16 @@
 	<h3>{{ formInfo.caption }}</h3>
 	<form @submit.prevent="onSubmit">
 		<div v-for="control in controls" :key="control.id" class="form-control">
-			<div v-if="control.control === 'TEXT'">
-				<label class="label-caption" :for="control.id">{{ control.caption }}</label>
-				<input
-						:id="control.id"
-						type="text"
-						:required="control.required"
-						:placeholder="control.caption"
-						v-model="formDataResult[control.id]"
-				/>
-				<span class="error" v-if="errors[control.id]">{{ errors[control.id] }}</span>
-			</div>
-			<div v-if="control.control === 'RADIO'">
-				<label class="label-caption">{{ control.caption }}</label>
-				<div v-for="option in control.options" :key="option.value">
-					<input
-							:id="`${control.id}-${option.value}`"
-							type="radio"
-							:name="control.id"
-							:value="option.value"
-							v-model="formDataResult[control.id]"
-					/>
-					<label :for="`${control.id}-${option.value}`">{{ option.label }}</label>
-				</div>
-				<span class="error" v-if="errors[control.id]">{{ errors[control.id] }}</span>
-			</div>
-			<div v-if="control.control === 'CHECKBOX'">
-				<label class="label-caption">{{ control.caption }}</label>
-				<div v-for="option in control.options" :key="option.value">
-					<input
-							:id="`${control.id}-${option.value}`"
-							type="checkbox"
-							:value="option.value"
-							:checked="formDataResult[control.id]?.includes(option.value)"
-							@change="onCheckboxChange(control.id, option.value)"
-					/>
-					<label :for="`${control.id}-${option.value}`">{{ option.label }}</label>
-				</div>
-				<span class="error" v-if="errors[control.id]">{{ errors[control.id] }}</span>
-			</div>
-			<div v-if="control.control === 'SELECT'">
-				<label class="label-caption" :for="control.id">{{ control.caption }}</label>
-				<select
-						:id="control.id"
-						:required="control.required"
-						v-model="formDataResult[control.id]"
-				>
-					<option v-for="option in control.options" :key="option.value" :value="option.value">
-						{{ option.label }}
-					</option>
-				</select>
-				<span class="error" v-if="errors[control.id]">{{ errors[control.id] }}</span>
-			</div>
+			<component
+					:is="getComponent(control.control)"
+					:control="control"
+					:formDataResult="formDataResult"
+					:errors="errors"
+					@input="handleInput"
+					@change="handleChange"
+					@button-click="onButtonClick"
+			/>
 			
-			<div v-if="control.control === 'BUTTON'">
-				<button
-						type="button"
-						@click="onButtonClick(control)"
-				>
-					{{ control.caption }}
-				</button>
-			</div>
-			<div v-if="control.control === 'LABEL'">
-				<label>{{ control.caption }}</label>
-			</div>
 		</div>
 	</form>
 </div>
@@ -76,6 +22,13 @@
 import Vue from "vue";
 
 import { Control, FormData } from "@/types/interface";
+
+import FormText from "@/components/FormText.vue";
+import FormRadio from "@/components/FormRadio.vue";
+import FormCheckbox from "@/components/FormCheckbox.vue";
+import FormSelect from "@/components/FormSelect.vue";
+import FormButton from "@/components/FormButton.vue";
+import FormLabel from "@/components/FormLabel.vue";
 
 
 export default Vue.extend({
@@ -122,6 +75,25 @@ export default Vue.extend({
 		
 		},
 	methods: {
+		getComponent(controlType: string) {
+			const componentsMap: Record<string, any> = {
+				TEXT: FormText,
+				RADIO: FormRadio,
+				CHECKBOX: FormCheckbox,
+				SELECT: FormSelect,
+				BUTTON: FormButton,
+				LABEL: FormLabel,
+			};
+			return componentsMap[controlType] || "div";
+		},
+		handleInput({ id, value }: { id: string; value: string | string[] }) {
+			this.$set(this.formDataResult, id, value);
+		},
+		handleChange({ id, value }: { id: string; value: string }) {
+			this.$set(this.formDataResult, id, value);
+			this.saveToLocalStorage();
+
+		},
 		// Сохраняем в localStorage.
 		saveToLocalStorage() {
 			if (!this.formInfo?.id) {
@@ -173,24 +145,13 @@ export default Vue.extend({
 				}
 			}
 		},
-		onCheckboxChange(id: string, value: string) {
-			if (!Array.isArray(this.formDataResult[id])) {
-				this.$set(this.formDataResult, id, []);
-			}
-			
-			const index = this.formDataResult[id].indexOf(value);
-			if (index > -1) {
-				this.formDataResult[id].splice(index, 1);
-			} else {
-				this.formDataResult[id].push(value);
-			}
-			this.saveToLocalStorage();
-		},
+
 		onButtonClick(control: Control) {
+			console.log('control', control)
 			if (control.caption === "OK") {
 				// можно сохранять при отправке формы
 				// this.saveToLocalStorage;
-				this.onSubmit();
+				//this.onSubmit();
 			} else if (control.caption === "Отмена") {
 				this.formDataResult = {};
 				this.errors = {};
