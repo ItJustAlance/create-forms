@@ -1,5 +1,5 @@
 export interface Control {
-  id: any;
+  id: string;
   control: "FORM" | "TEXT" | "LABEL" | "BUTTON" | "SELECT" | "CHECKBOX" | "RADIO";
   caption: string;
   parentID?: string;

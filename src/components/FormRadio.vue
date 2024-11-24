@@ -1,15 +1,15 @@
 <template>
 	<div>
-		<div v-for="option in control.options" :key="option.value">
+		<div style="margin-bottom: 10px" v-for="(option, index) in control.options" :key="index">
 			<input
-					:id="`${control.id}-${option.value}`"
+					:id="`rad-${index}`"
 					type="radio"
-					:name="control.id"
-					:checked="isChecked(option.value)"
+					:name="`${control.control}-${control.id}`"
+					:checked="formDataResult[control.id] === option.value"
 					:value="option.value"
-					@input="$emit('input', { id: control.id, value: $event.target.value })"
+					@change="$emit('input', { id: control.id, value: $event.target.value })"
 			/>
-			<label :for="`${control.id}-${option.value}`">{{ option.label }}</label>
+			<label :for="`rad-${index}`">{{ option.label }}</label>
 		</div>
 		
 		<span class="error" v-if="errors[control.id]">{{ errors[control.id] }}</span>
@@ -25,9 +25,7 @@ export default {
 		errors: Object,
 	},
 	methods:{
-		isChecked() {
-			return this.formDataResult[this.control.id]
-		},
+
 
 	}
 };
